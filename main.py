@@ -143,14 +143,33 @@ while True:
 
   # Choose a random message from the list
   message = random.choice(messages)
+  print(message)
+
+  # Split the message into multiple SMS messages if it is too long
+  message_parts = []
+  while len(message) > 0:
+      # Check if the message is longer than the maximum length for an SMS message
+      if len(message) > 1600:
+          # Find the last space before the 1600th character
+          last_space = message[:1600].rfind(' ')
+          # Split the message at the last space
+          message_part = message[:last_space]
+          message = message[last_space:]
+      else:
+          # The message is shorter than the maximum length, so send it as is
+          message_part = message
+          message = ""
+
+      # Add the message part to the list
+      message_parts.append(message_part)
 
   # Send the SMS message
-  message = client.messages.create(body=message,
+  message = client.messages.create(body=message_parts,
                                    from_=from_number,
                                    to=to_number)
 
   # Choose a random wait time between 1 and 4 days
-  wait_time = random.randint(0.5, 2) * 24 * 60 * 60
+  wait_time = random.randint(1, 4) * 12 * 60 * 60
 
   # Wait the chosen number of days before sending the next message
   time.sleep(wait_time)
